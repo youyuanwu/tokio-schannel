@@ -1,0 +1,11 @@
+[package]
+name = "tokio-schannel"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+schannel = "0.1"
+tokio = "1"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["io-util", "net", "rt", "time", "macros"] }
