@@ -1,3 +1,4 @@
+#![cfg(target_os = "windows")]
 // schannel
 
 use std::{

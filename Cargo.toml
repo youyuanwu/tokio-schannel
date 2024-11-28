@@ -2,6 +2,16 @@
 name = "tokio-schannel"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+authors = ["youyuanwu@outlook.com"]
+repository = "https://github.com/youyuanwu/tokio-schannel"
+documentation = "https://github.com/youyuanwu/tokio-schannel"
+description = """
+An implementation of TLS streams for Tokio backed by Schannel
+"""
+categories = ["web-programming", "network-programming"]
+keywords = ["tls"]
+readme = "README.md"
 
 [dependencies]
 schannel = "0.1"
