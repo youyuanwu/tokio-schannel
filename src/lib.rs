@@ -12,8 +12,8 @@ use std::{
 use schannel::tls_stream::{HandshakeError, MidHandshakeTlsStream};
 use tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
 
-// ----------- wrapper copied from openssl tokio
-struct StreamWrapper<S> {
+// ----------- wrapper for none async/ pollable stream.
+pub struct StreamWrapper<S> {
     stream: S,
     context: usize,
 }
@@ -95,15 +95,23 @@ fn cvt<T>(r: io::Result<T>) -> Poll<io::Result<T>> {
     }
 }
 
-// ----------- wrapper copied from openssl tokio end
+impl<S> StreamWrapper<S> {
+    /// Returns a shared reference to the inner stream.
+    pub fn get_ref(&self) -> &S {
+        &self.stream
+    }
 
+    /// Returns a mutable reference to the inner stream.
+    pub fn get_mut(&mut self) -> &mut S {
+        &mut self.stream
+    }
+}
+
+/// Wrapper around schannels' tls stream and provide async apis.
 #[derive(Debug)]
 pub struct TlsStream<S>(schannel::tls_stream::TlsStream<StreamWrapper<S>>);
 
-impl<S> TlsStream<S>
-where
-    S: AsyncRead + AsyncWrite,
-{
+impl<S> TlsStream<S> {
     // /// Like [`TlsStream::new`](schannel::tls_stream::TlsStream).
     // pub fn new( stream: S) -> Result<Self, ErrorStack> {
     //     ssl::SslStream::new(ssl, StreamWrapper { stream, context: 0 }).map(SslStream)
@@ -120,6 +128,16 @@ where
         let r = f(&mut this.0);
         this.0.get_mut().context = 0;
         r
+    }
+
+    /// Returns a shared reference to the inner stream.
+    pub fn get_ref(&self) -> &schannel::tls_stream::TlsStream<StreamWrapper<S>> {
+        &self.0
+    }
+
+    /// Returns a mutable reference to the inner stream.
+    pub fn get_mut(&mut self) -> &mut schannel::tls_stream::TlsStream<StreamWrapper<S>> {
+        &mut self.0
     }
 }
 
