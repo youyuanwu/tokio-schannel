@@ -13,7 +13,7 @@ use tokio::{
 
 use crate::{TlsAcceptor, TlsConnector};
 
-const FRIENDLY_NAME: &str = "YARRP-Test";
+const FRIENDLY_NAME: &str = "YY-Test";
 
 #[tokio::test]
 async fn test_schannel() {
@@ -65,6 +65,7 @@ async fn test_schannel() {
 }
 
 fn find_test_cert() -> Option<CertContext> {
+    get_test_cert_hash();
     let store = CertStore::open_current_user("My").unwrap();
     for cert in store.certs() {
         let name = match cert.friendly_name() {
@@ -77,4 +78,40 @@ fn find_test_cert() -> Option<CertContext> {
         return Some(cert);
     }
     None
+}
+
+/// Use pwsh to get the test cert hash, or generate the cert.
+pub fn get_test_cert_hash() -> String {
+    fn get_hash() -> Option<String> {
+        let output = std::process::Command::new("pwsh.exe")
+                .args(["-Command", "Get-ChildItem Cert:\\CurrentUser\\My | Where-Object -Property FriendlyName -EQ -Value YY-Test | Select-Object -ExpandProperty Thumbprint -First 1"]).
+                output().expect("Failed to execute command");
+        assert!(output.status.success());
+        let mut s = String::from_utf8(output.stdout).unwrap();
+        if s.ends_with('\n') {
+            s.pop();
+            if s.ends_with('\r') {
+                s.pop();
+            }
+        };
+        if s.is_empty() { None } else { Some(s) }
+    }
+    fn gen_cert() {
+        let gen_cert_cmd = "New-SelfSignedCertificate -DnsName $env:computername,localhost -FriendlyName YY-Test -KeyUsageProperty Sign -KeyUsage DigitalSignature -CertStoreLocation cert:\\CurrentUser\\My -HashAlgorithm SHA256 -Provider \"Microsoft Software Key Storage Provider\" -KeyExportPolicy Exportable";
+        let output = std::process::Command::new("pwsh.exe")
+            .args(["-Command", gen_cert_cmd])
+            .stdout(std::process::Stdio::inherit())
+            .stderr(std::process::Stdio::inherit())
+            .output()
+            .expect("Failed to execute command");
+        assert!(output.status.success());
+    }
+    // generate the cert if not exist
+    match get_hash() {
+        Some(s) => s,
+        None => {
+            gen_cert();
+            get_hash().unwrap()
+        }
+    }
 }
