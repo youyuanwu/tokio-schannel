@@ -1,6 +1,6 @@
 [package]
 name = "tokio-schannel"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 license = "MIT"
 authors = ["youyuanwu@outlook.com"]
@@ -15,7 +15,7 @@ readme = "README.md"
 
 [dependencies]
 schannel = "0.1"
-tokio = "1"
+tokio = { version = "1", features = [], default-features = false}
 
 [dev-dependencies]
 tokio = { version = "1", features = ["io-util", "net", "rt", "time", "macros"] }
