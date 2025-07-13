@@ -34,8 +34,8 @@ impl<S> StreamWrapper<S> {
     /// wrapper must be pinned in memory.
     unsafe fn parts(&mut self) -> (Pin<&mut S>, &mut Context<'_>) {
         debug_assert_ne!(self.context, 0);
-        let stream = Pin::new_unchecked(&mut self.stream);
-        let context = &mut *(self.context as *mut Context<'_>);
+        let stream = unsafe { Pin::new_unchecked(&mut self.stream) };
+        let context = unsafe { &mut *(self.context as *mut Context<'_>) };
         (stream, context)
     }
 
