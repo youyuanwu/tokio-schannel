@@ -62,7 +62,7 @@ jobs:
       # Dependabot (and other) runs cannot access repository Actions secrets,
       # so CODECOV_TOKEN is empty there. Skip the upload instead of failing.
       if: env.CODECOV_TOKEN != ''
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v7
       with:
         files: ./codecov.json
         fail_ci_if_error: true
