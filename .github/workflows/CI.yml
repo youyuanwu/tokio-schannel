@@ -12,7 +12,7 @@ jobs:
       rust-msrv: ${{ env.RUST_MSRV }}
       rust-version: ${{ steps.parse.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - id: parse
         run: |
           version=$(grep 'channel' rust-toolchain.toml | sed 's/.*"\(.*\)"/\1/')
@@ -30,7 +30,7 @@ jobs:
         os: [ windows-latest ]
         rust: [ '${{ needs.setup.outputs.rust-msrv }}', '${{ needs.setup.outputs.rust-version }}' ]
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
 
     - name: Install rust
       uses: dtolnay/rust-toolchain@stable
