@@ -191,6 +191,9 @@ impl TlsAcceptor {
         Self { inner }
     }
 
+    // schannel's `HandshakeError` (returned by the closure) has a large `Err`
+    // variant, but it is part of the external schannel API, so allow the lint.
+    #[allow(clippy::result_large_err)]
     pub async fn accept<S>(
         &mut self,
         cred: schannel::schannel_cred::SchannelCred,
@@ -213,6 +216,9 @@ impl TlsConnector {
         Self { inner }
     }
 
+    // schannel's `HandshakeError` (returned by the closure) has a large `Err`
+    // variant, but it is part of the external schannel API, so allow the lint.
+    #[allow(clippy::result_large_err)]
     pub async fn connect<IO>(
         &mut self,
         cred: schannel::schannel_cred::SchannelCred,
